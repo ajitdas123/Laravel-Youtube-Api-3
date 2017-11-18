@@ -2,11 +2,11 @@
 
 Please note, that this package will only work with a single YouTube account and does not support multiple accounts.
 
-<h3>Installation<h3>
+<h3>Installation</h3>
 
 To install, use the following to pull the package in via Composer.
 
-composer require ad/youtube-uploader
+<code> composer require ad/youtube-uploader </code>
 
 Now register the Service provider in config/app.php
 
@@ -21,11 +21,11 @@ And also add the alias to the same file.
     'Youtube' => ad\YoutubeUploader\Facades\YoutubeUploader::class,
 ],
 
-Configuration
+<h3>Configuration</h3>
 
 You now need to publish the youtubeUpload.php config and migrations.
 
-php artisan vendor:publish --provider="ad\YoutubeUploader\YoutubeServiceProvider"
+<code>php artisan vendor:publish --provider="ad\YoutubeUploader\YoutubeServiceProvider" </code>
 
 Now you'll want to run php artisan migrate to create the youtube_access_tokens table which as you would imagine, will contain your access tokens once you're authenticated correctly.
 
@@ -39,13 +39,15 @@ You can add multiple redirect URIs, for example you may want to add the URIs for
 
 Once you are happy with everything, create the credentials and you will be provided with a Client ID and Client Secret. These now need to be added to your .env file.
 
-GOOGLE_CLIENT_ID=YOUR_CLIENT_ID
-GOOGLE_CLIENT_SECRET=YOUR_SECRET
-Authentication
+<b>GOOGLE_CLIENT_ID=YOUR_CLIENT_ID </b>
+
+<b>GOOGLE_CLIENT_SECRET=YOUR_SECRET</b>
+
+<h3>Authentication</h3>
 
 For security reasons, the routes to authorize your channel with your Laravel application for disabled by default. You will need to enable them in your config/youtube.php before doing the following.
 
-Now your application is configured, we'll go through the inital authentication with Google. By default, the authorization route is /youtube/auth. Simply visit this URI in your application and you will be redirect to Google to authenticate your YouTube account.
+Now your application is configured, we'll go through the inital authentication with Google. By default, the authorization route is <code>/youtube/auth </code>. Simply visit this URI in your application and you will be redirect to Google to authenticate your YouTube account.
 
 Assuming you were not presented with any errors during authentication, you will be redirected back to your application root. (/).
 
@@ -61,23 +63,28 @@ Upload a Video
 
 To upload a video, you simply need to pass the full path to your video you wish to upload and specify your video information.
 
-Here's an example:
 
+<h3>Here's an example: </h3>
+<code>
 $video = YoutubeUploader::upload($fullPathToVideo, [
     'title'       => 'My Awesome Video',
     'description' => 'You can also specify your video description here.',
     'tags'	      => ['foo', 'bar', 'baz'],
     'category_id' => 10
 ]);
-
+    
 return $video->getVideoId();
+</code>
 The above will return the ID of the uploaded video to YouTube. (i.e dQw4w9WgXcQ)
 
 By default, video uploads are public. If you would like to change the privacy of the upload, you can do so by passing a third parameter to the upload method.
 
 For example, the below will upload the video as unlisted.
-
-$video = YoutubeUploader::upload($fullPathToVideo, $params, 'unlisted');
+    
+   <code>
+    $video = YoutubeUploader::upload($fullPathToVideo, $params, 'unlisted');
+   </code>
+   
 Custom Thumbnail
 
 If you would like to set a custom thumbnail for for upload, you can use the withThumbnail() method via chaining.
