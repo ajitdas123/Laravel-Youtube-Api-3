@@ -1,6 +1,6 @@
 {
     "name": "ad/youtube",
-    "description": "Laravel Youtube API 3 Upload",
+    "description": "Youtube API3 Package for laravel",
     "license": "MIT",
     "authors": [
         {
@@ -21,22 +21,22 @@
     },
     "autoload": {
         "psr-4": {
-            "ad\\YoutubeUploader\\": "src/"
+            "ad\\Youtube\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "ad\\YoutubeUploader\\Tests\\": "tests/"
+            "ad\\Youtube\\Tests\\": "tests/"
         }
     },
     "minimum-stability": "stable",
     "extra": {
         "laravel": {
             "providers": [
-               "ad\\YoutubeUploader\\YoutubeUploaderServiceProvider"
+                "ad\\Youtube\\YoutubeAPIServiceProvider"
             ],
             "aliases": {
-                "Youtube": "ad\\YoutubeUploader\\Facades\\YoutubeUploader"
+                "Youtube": "ad\\Youtube\\Facades\\YoutubeAPI"
             }
         }
     }
