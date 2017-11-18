@@ -1,6 +1,6 @@
 <?php
 
-namespace ad\YoutubeUploader;
+namespace ad\youtube;
 
 use Illuminate\Support\ServiceProvider;
 
