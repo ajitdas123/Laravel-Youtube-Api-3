@@ -124,4 +124,4 @@ When deleting a video, it will check if exists before attempting to delete.
 
 # Original codebase
 
-Origincal codebase for this project can be found at  https://github.com/JoeDawson/youtube
+Original codebase for this project can be found at  https://github.com/JoeDawson/youtube
