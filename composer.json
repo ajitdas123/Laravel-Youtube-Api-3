@@ -33,10 +33,10 @@
     "extra": {
         "laravel": {
             "providers": [
-               "ad\\youtube\\YoutubeUploaderServiceProvider"
+                "ad\\YoutubeUploader\\YoutubeServiceProvider"
             ],
             "aliases": {
-                "Youtube": "ad\\youtube\\Facades\\YoutubeUploader"
+                "Youtube": "ad\\YoutubeUploader\\Facades\\Youtube"
             }
         }
     }
