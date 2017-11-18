@@ -120,6 +120,8 @@ YoutubeUploader::delete($videoId);
 
 When deleting a video, it will check if exists before attempting to delete.
 
-# Questions
 
-Should you have any questions, please feel free to submit an issue.
+
+# Original codebase
+
+Origincal codebase for this project can be found at  https://github.com/JoeDawson/youtube
