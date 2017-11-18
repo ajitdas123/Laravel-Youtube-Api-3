@@ -16,7 +16,7 @@ Now register the Service provider in `config/app.php`
 ```php
 'providers' => [
     ...
-    ad\YoutubeUploader\YoutubeServiceProvider::class,
+    ad\Youtube\YoutubeAPIServiceProvider::class,
 ],
 ```
 
@@ -25,16 +25,16 @@ And also add the alias to the same file.
 ```php
 'aliases' => [
     ...
-    'Youtube' => ad\YoutubeUploader\Facades\YoutubeUploader::class,
+    'YoutubeAPI'=>ad\Youtube\Facades\YoutubeAPI::class,
 ],
 ```
 
 ## Configuration
 
-You now need to publish the `youtubeUpload.php` config and migrations.
+You now need to publish the `youtubeAPI.php` config and migrations.
 
 ```
-php artisan vendor:publish --provider="ad\YoutubeUploader\YoutubeServiceProvider"
+php artisan vendor:publish --provider="ad\Youtube\YoutubeAPIServiceProvider"
 ```
 
 Now you'll want to run `php artisan migrate` to create the `youtube_access_tokens` table which as you would imagine, will contain your access tokens once you're authenticated correctly.
@@ -56,7 +56,7 @@ GOOGLE_CLIENT_SECRET=YOUR_SECRET
 
 ### Authentication
 
-For security reasons, the routes to authorize your channel with your Laravel application for disabled by default. You will need to enable them in your `config/youtubeUploader.php` before doing the following.
+For security reasons, the routes to authorize your channel with your Laravel application for disabled by default. You will need to enable them in your `config/youtubeAPIConfig.php` before doing the following.
 
 Now your application is configured, we'll go through the inital authentication with Google. By default, the authorization route is `/youtube/auth`. Simply visit this URI in your application and you will be redirect to Google to authenticate your YouTube account.
 
@@ -77,7 +77,7 @@ To upload a video, you simply need to pass the **full** path to your video you w
 Here's an example:
 
 ```php
-$video = YoutubeUploader::upload($fullPathToVideo, [
+$video = YoutubeAPI::upload($fullPathToVideo, [
     'title'       => 'My Awesome Video',
     'description' => 'You can also specify your video description here.',
     'tags'	      => ['foo', 'bar', 'baz'],
@@ -94,7 +94,7 @@ By default, video uploads are public. If you would like to change the privacy of
 For example, the below will upload the video as `unlisted`.
 
 ```php
-$video = YoutubeUploader::upload($fullPathToVideo, $params, 'unlisted');
+$video = YoutubeAPI::upload($fullPathToVideo, $params, 'unlisted');
 ```
 
 ### Custom Thumbnail
@@ -104,7 +104,7 @@ If you would like to set a custom thumbnail for for upload, you can use the `wit
 ```php
 $fullpathToImage = storage_path('app/public/thumbnail.jpg');
 
-$video = YoutubeUploader::upload($fullPathToVideo, $params)->withThumbnail($fullpathToImage);
+$video = YoutubeAPI::upload($fullPathToVideo, $params)->withThumbnail($fullpathToImage);
 
 return $youtube->getThumbnailUrl();
 ```
@@ -116,7 +116,7 @@ return $youtube->getThumbnailUrl();
 If you would like to delete a video, which of course is uploaded to your authorized channel, you will also have the ability to delete it:
 
 ```php
-YoutubeUploader::delete($videoId);
+YoutubeAPI::delete($videoId);
 ```
 
 When deleting a video, it will check if exists before attempting to delete.
