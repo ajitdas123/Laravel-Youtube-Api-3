@@ -10,8 +10,7 @@ To install, use the following to pull the package in via Composer.
 composer require ad/youtube:dev-master
 ```
 
-**You will see error dont worry about that.
-change the name of the folder youtube inside Vendor>ad  to YoutubeUploader and then run composer dump **
+
 Now register the Service provider in `config/app.php`
 
 ```php
