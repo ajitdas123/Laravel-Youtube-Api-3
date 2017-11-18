@@ -6,24 +6,26 @@ Installation
 
 To install, use the following to pull the package in via Composer.
 
-composer require dawson/youtube
+composer require ad/youtube-uploader
 Now register the Service provider in config/app.php
 
 'providers' => [
-    ...
+
     ad\YoutubeUploader\YoutubeServiceProvider::class,
 ],
 And also add the alias to the same file.
 
 'aliases' => [
-    ...
+ 
     'Youtube' => ad\YoutubeUploader\Facades\YoutubeUploader::class,
 ],
+
 Configuration
 
-You now need to publish the youtube.php config and migrations.
+You now need to publish the youtubeUpload.php config and migrations.
 
 php artisan vendor:publish --provider="ad\YoutubeUploader\YoutubeServiceProvider"
+
 Now you'll want to run php artisan migrate to create the youtube_access_tokens table which as you would imagine, will contain your access tokens once you're authenticated correctly.
 
 Obtaining your Credentials
