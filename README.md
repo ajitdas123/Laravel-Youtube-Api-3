@@ -7,7 +7,7 @@
 To install, use the following to pull the package in via Composer.
 
 ```
-composer require ad/youtube-uploader
+composer require ad/youtube
 ```
 
 Now register the Service provider in `config/app.php`
