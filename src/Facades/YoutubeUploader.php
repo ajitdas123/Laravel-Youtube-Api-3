@@ -7,7 +7,7 @@
  * Time: 2:41 PM
  */
 
-namespace ad\YoutubeUploader\Facades;
+namespace ad\youtube\Facades;
 use Illuminate\Support\Facades\Facade;
 class YoutubeUploader extends Facade
 {
