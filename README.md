@@ -1,12 +1,13 @@
-Laravel 5 - YouTube Video Upload
+<h1>Laravel 5 - YouTube Video Upload</h1>
 
 Please note, that this package will only work with a single YouTube account and does not support multiple accounts.
 
-Installation
+<h3>Installation<h3>
 
 To install, use the following to pull the package in via Composer.
 
 composer require ad/youtube-uploader
+
 Now register the Service provider in config/app.php
 
 'providers' => [
