@@ -8,7 +8,6 @@
             "email": "ajit@madgeek.in"
         }
     ],
-    "minimum-stability": "stable",
     "require": {
         "php": "^7.0",
         "illuminate/support": "^5.4",
@@ -30,6 +29,7 @@
             "ad\\YoutubeUploader\\Tests\\": "tests/"
         }
     },
+    "minimum-stability": "stable",
     "extra": {
         "laravel": {
             "providers": [
