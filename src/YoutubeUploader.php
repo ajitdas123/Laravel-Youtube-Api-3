@@ -6,7 +6,7 @@
  * Time: 2:39 PM
  */
 
-namespace ad\YoutubeUploader;
+namespace ad\youtube;
 
 use Exception;
 use Carbon\Carbon;
