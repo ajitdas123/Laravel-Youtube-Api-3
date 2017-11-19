@@ -18,6 +18,6 @@ class YoutubeAPI extends Facade
      */
     protected static function getFacadeAccessor()
     {
-        return 'youtube';
+        return 'youtubeAPI';
     }
 }
