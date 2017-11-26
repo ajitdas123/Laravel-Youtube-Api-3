@@ -457,4 +457,31 @@ class YoutubeAPI
         }
     }
 
+
+    /**Get playlist information **/
+    public function playListInfoById($id){
+        $this->handleAccessToken();
+        try {
+
+            return $response;
+        } catch (\Google_Service_Exception $e) {
+            throw new Exception($e->getMessage());
+        } catch (\Google_Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+    }
+
+    /**Get playlist items **/
+    public function playListItemById($id){
+        $this->handleAccessToken();
+        try {
+            $response = $this->youtube->playlistItems->listPlaylistItems( 'snippet,contentDetails',
+                array('maxResults' => 25, 'playlistId' => $id));
+            return $response;
+        } catch (\Google_Service_Exception $e) {
+            throw new Exception($e->getMessage());
+        } catch (\Google_Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+    }
 }
