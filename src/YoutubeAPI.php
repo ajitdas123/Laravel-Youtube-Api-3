@@ -74,7 +74,7 @@ class YoutubeAPI
      * @param  string $privacyStatus
      * @return string
      */
-    public function upload($path, array $data = [], $privacyStatus = 'public')
+    public function upload($path, array $data = [], $privacyStatus)
     {
         if(!file_exists($path)) {
             throw new Exception('Video file does not exist at path: "'. $path .'". Provide a full path to the file before attempting to upload.');
@@ -475,6 +475,42 @@ class YoutubeAPI
             $response = $this->youtube->playlistItems->listPlaylistItems( 'snippet,contentDetails',
                 array('maxResults' => 25, 'playlistId' => $id));
             return $response;
+        } catch (\Google_Service_Exception $e) {
+            throw new Exception($e->getMessage());
+        } catch (\Google_Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+    }
+
+    /**Insert video into a playlist **/
+    public function insertVideoInPlaylist($videoId,$playlistId){
+        $this->handleAccessToken();
+        try {
+            // 5. Add a video to the playlist. First, define the resource being added
+            // to the playlist by setting its video ID and kind.
+            $resourceId = new \Google_Service_YouTube_ResourceId();
+            $resourceId->setVideoId($videoId);
+            $resourceId->setKind('youtube#video');
+
+            // Then define a snippet for the playlist item. Set the playlist item's
+            // title if you want to display a different value than the title of the
+            // video being added. Add the resource ID and the playlist ID retrieved
+            // in step 4 to the snippet as well.
+            $playlistItemSnippet = new \Google_Service_YouTube_PlaylistItemSnippet();
+            //$playlistItemSnippet->setTitle('First video in the test playlist');
+            $playlistItemSnippet->setPlaylistId($playlistId);
+
+
+            // Finally, create a playlistItem resource and add the snippet to the
+            // resource, then call the playlistItems.insert method to add the playlist
+            // item.
+
+            $playlistItem = new \Google_Service_YouTube_PlaylistItem();
+            $playlistItem->setSnippet($playlistItemSnippet);
+            $playlistItemResponse = $this->youtube->playlistItems->insert(
+                'snippet,contentDetails', $playlistItem, array());
+            return $playlistItemResponse;
+
         } catch (\Google_Service_Exception $e) {
             throw new Exception($e->getMessage());
         } catch (\Google_Exception $e) {
