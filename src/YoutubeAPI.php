@@ -380,12 +380,6 @@ class YoutubeAPI
     public function getAllPlayList(){
         $this->handleAccessToken();
         try {
-            //Set channel id
-
-            //Set limit
-
-            //Set privacy status
-
             $params =array('mine' => true, 'maxResults' => 25);
             //Array marge
             $response = $this->youtube->playlists->listPlaylists('snippet,contentDetails', $params);
@@ -463,7 +457,10 @@ class YoutubeAPI
         $this->handleAccessToken();
         try {
 
-            return $response;
+           $params =array('id'=> $id, );
+            //Array marge
+            $response = $this->youtube->playlists->listPlaylists('snippet',$params);
+            return $response['items'];
         } catch (\Google_Service_Exception $e) {
             throw new Exception($e->getMessage());
         } catch (\Google_Exception $e) {
