@@ -310,4 +310,151 @@ class YoutubeAPI
     {
         return call_user_func_array([$this->client, $method], $args);
     }
+
+    /***
+     * Create a playlist
+     */
+    public function createPlaylist($name,$descriptions,$privacy)
+    {
+
+        $this->handleAccessToken();
+        try {
+
+            // 1. Create the snippet for the playlist. Set its title and description.
+            $playlistSnippet = new \Google_Service_YouTube_PlaylistSnippet();
+            $playlistSnippet->setTitle($name);
+            $playlistSnippet->setDescription($descriptions);
+
+            // 2. Define the playlist's status.
+            $playlistStatus = new \Google_Service_YouTube_PlaylistStatus();
+            $playlistStatus->setPrivacyStatus($privacy);
+
+            // 3. Define a playlist resource and associate the snippet and status
+            // defined above with that resource.
+            $youTubePlaylist = new \Google_Service_YouTube_Playlist();
+            $youTubePlaylist->setSnippet($playlistSnippet);
+            $youTubePlaylist->setStatus($playlistStatus);
+
+            // 4. Call the playlists.insert method to create the playlist. The API
+            // response will contain information about the new playlist.
+            $playlistResponse = $this->youtube->playlists->insert('snippet,status',
+                $youTubePlaylist, array());
+            //$playlistId = $playlistResponse['id'];
+
+            // 5. Add a video to the playlist. First, define the resource being added
+            // to the playlist by setting its video ID and kind.
+//            $resourceId = new \Google_Service_YouTube_ResourceId();
+//            $resourceId->setVideoId('SZj6rAYkYOg');
+//            $resourceId->setKind('youtube#video');
+
+            // Then define a snippet for the playlist item. Set the playlist item's
+            // title if you want to display a different value than the title of the
+            // video being added. Add the resource ID and the playlist ID retrieved
+            // in step 4 to the snippet as well.
+//            $playlistItemSnippet = new \Google_Service_YouTube_PlaylistItemSnippet();
+//            $playlistItemSnippet->setTitle('First video in the test playlist');
+//            $playlistItemSnippet->setPlaylistId($playlistId);
+
+
+            // Finally, create a playlistItem resource and add the snippet to the
+            // resource, then call the playlistItems.insert method to add the playlist
+            // item.
+//            $playlistItem = new \Google_Service_YouTube_PlaylistItem();
+//            $playlistItem->setSnippet($playlistItemSnippet);
+//            $playlistItemResponse = $this->youtube->playlistItems->insert(
+//                'snippet,contentDetails', $playlistItem, array());
+
+            return $playlistResponse;
+        }  catch (\Google_Service_Exception $e) {
+            throw new Exception($e->getMessage());
+        } catch (\Google_Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+    }
+
+
+    /***
+     * Get all playlist by channel id
+     */
+
+    public function getAllPlayList(){
+        $this->handleAccessToken();
+        try {
+            //Set channel id
+
+            //Set limit
+
+            //Set privacy status
+
+            $params =array('mine' => true, 'maxResults' => 25);
+            //Array marge
+            $response = $this->youtube->playlists->listPlaylists('snippet,contentDetails', $params);
+            return $response;
+        } catch (\Google_Service_Exception $e) {
+            throw new Exception($e->getMessage());
+        } catch (\Google_Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+    }
+
+    /***
+     * Check if playlist Exists
+     */
+
+    public function isPlaylistExist(){
+        
+    }
+
+    /***
+     * Update a playlist
+     */
+
+    public function updatePlaylist($id,$title,$description,$privacy)
+    {
+        $this->handleAccessToken();
+        try {
+            // 1. Create the snippet for the playlist. Set its title and description.
+            $playlistSnippet = new \Google_Service_YouTube_PlaylistSnippet();
+            $playlistSnippet->setTitle($title);
+            $playlistSnippet->setDescription($description);
+
+            // 2. Define the playlist's status.
+            $playlistStatus = new \Google_Service_YouTube_PlaylistStatus();
+            $playlistStatus->setPrivacyStatus($privacy);
+
+            // 3. Define a playlist resource and associate the snippet and status
+            $youTubePlaylist = new \Google_Service_YouTube_Playlist();
+            $youTubePlaylist->setId($id);
+            $youTubePlaylist->setSnippet($playlistSnippet);
+            $youTubePlaylist->setStatus($playlistStatus);
+
+            // 4. Call the playlists.update method to update the playlist
+            $playlistResponse = $this->youtube->playlists->update('snippet,status',
+                $youTubePlaylist, array());
+            return $playlistResponse;
+        }
+        catch (\Google_Service_Exception $e) {
+            throw new Exception($e->getMessage());
+        } catch (\Google_Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+    }
+
+
+    /***
+     * Delete playlist
+     */
+
+    public function deletePlaylist($id){
+        $this->handleAccessToken();
+        try {
+            $playlistResponse = $this->youtube->playlists->delete($id);
+            return $playlistResponse;
+        }catch (\Google_Service_Exception $e) {
+            throw new Exception($e->getMessage());
+        } catch (\Google_Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+    }
+
 }
