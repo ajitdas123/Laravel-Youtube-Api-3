@@ -377,10 +377,10 @@ class YoutubeAPI
      * Get all playlist by channel id
      */
 
-    public function getAllPlayList(){
+    public function getAllPlayList($limit){
         $this->handleAccessToken();
         try {
-            $params =array('mine' => true, 'maxResults' => 25);
+            $params =array('mine' => true, 'maxResults' => $limit);
             //Array marge
             $response = $this->youtube->playlists->listPlaylists('snippet,contentDetails', $params);
             return $response;
@@ -469,11 +469,11 @@ class YoutubeAPI
     }
 
     /**Get playlist items **/
-    public function playListItemById($id){
+    public function playListItemById($id,$limit){
         $this->handleAccessToken();
         try {
             $response = $this->youtube->playlistItems->listPlaylistItems( 'snippet,contentDetails',
-                array('maxResults' => 25, 'playlistId' => $id));
+                array('maxResults' => $limit, 'playlistId' => $id));
             return $response;
         } catch (\Google_Service_Exception $e) {
             throw new Exception($e->getMessage());
