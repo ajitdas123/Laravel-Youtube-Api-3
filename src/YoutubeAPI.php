@@ -95,7 +95,7 @@ class YoutubeAPI
             $video->setSnippet($snippet);
             $video->setStatus($status);
             // Set the Chunk Size
-            $chunkSize = 1 * 1024 * 1024;
+            $chunkSize = 100 * 1024 * 1024;
             // Set the defer to true
             $this->client->setDefer(true);
             // Build the request
