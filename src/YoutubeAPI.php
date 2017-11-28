@@ -382,7 +382,7 @@ class YoutubeAPI
         try {
             $params =array('mine' => true, 'maxResults' => $limit);
             //Array marge
-            $response = $this->youtube->playlists->listPlaylists('snippet,contentDetails', $params);
+            $response = $this->youtube->playlists->listPlaylists('snippet', $params);
             return $response;
         } catch (\Google_Service_Exception $e) {
             throw new Exception($e->getMessage());
@@ -499,6 +499,7 @@ class YoutubeAPI
             $playlistItemSnippet = new \Google_Service_YouTube_PlaylistItemSnippet();
             //$playlistItemSnippet->setTitle('First video in the test playlist');
             $playlistItemSnippet->setPlaylistId($playlistId);
+            $playlistItemSnippet->setResourceId($resourceId);
 
 
             // Finally, create a playlistItem resource and add the snippet to the
@@ -517,4 +518,19 @@ class YoutubeAPI
             throw new Exception($e->getMessage());
         }
     }
+
+    /**Remove  video from playlist **/
+    public function removeVideoFromPlaylist($id){
+        $this->handleAccessToken();
+        try {
+            $playlistResponse = $this->youtube->playlistItems->delete($id);
+            return $playlistResponse;
+        }catch (\Google_Service_Exception $e) {
+            throw new Exception($e->getMessage());
+        } catch (\Google_Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+    }
+
+
 }
