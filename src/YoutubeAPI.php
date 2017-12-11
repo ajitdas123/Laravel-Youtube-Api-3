@@ -95,7 +95,7 @@ class YoutubeAPI
             $video->setSnippet($snippet);
             $video->setStatus($status);
             // Set the Chunk Size
-            $chunkSize = 1 * 1024 * 1024;
+            $chunkSize = 100 * 1024 * 1024;
             // Set the defer to true
             $this->client->setDefer(true);
             // Build the request
@@ -377,12 +377,12 @@ class YoutubeAPI
      * Get all playlist by channel id
      */
 
-    public function getAllPlayList(){
+    public function getAllPlayList($limit){
         $this->handleAccessToken();
         try {
-            $params =array('mine' => true, 'maxResults' => 25);
+            $params =array('mine' => true, 'maxResults' => $limit);
             //Array marge
-            $response = $this->youtube->playlists->listPlaylists('snippet,contentDetails', $params);
+            $response = $this->youtube->playlists->listPlaylists('snippet', $params);
             return $response;
         } catch (\Google_Service_Exception $e) {
             throw new Exception($e->getMessage());
@@ -469,11 +469,11 @@ class YoutubeAPI
     }
 
     /**Get playlist items **/
-    public function playListItemById($id){
+    public function playListItemById($id,$limit){
         $this->handleAccessToken();
         try {
             $response = $this->youtube->playlistItems->listPlaylistItems( 'snippet,contentDetails',
-                array('maxResults' => 25, 'playlistId' => $id));
+                array('maxResults' => $limit, 'playlistId' => $id));
             return $response;
         } catch (\Google_Service_Exception $e) {
             throw new Exception($e->getMessage());
@@ -499,6 +499,7 @@ class YoutubeAPI
             $playlistItemSnippet = new \Google_Service_YouTube_PlaylistItemSnippet();
             //$playlistItemSnippet->setTitle('First video in the test playlist');
             $playlistItemSnippet->setPlaylistId($playlistId);
+            $playlistItemSnippet->setResourceId($resourceId);
 
 
             // Finally, create a playlistItem resource and add the snippet to the
@@ -517,4 +518,19 @@ class YoutubeAPI
             throw new Exception($e->getMessage());
         }
     }
+
+    /**Remove  video from playlist **/
+    public function removeVideoFromPlaylist($id){
+        $this->handleAccessToken();
+        try {
+            $playlistResponse = $this->youtube->playlistItems->delete($id);
+            return $playlistResponse;
+        }catch (\Google_Service_Exception $e) {
+            throw new Exception($e->getMessage());
+        } catch (\Google_Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+    }
+
+
 }
