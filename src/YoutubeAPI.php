@@ -95,7 +95,7 @@ class YoutubeAPI
             $video->setSnippet($snippet);
             $video->setStatus($status);
             // Set the Chunk Size
-            $chunkSize = 100 * 1024 * 1024;
+            $chunkSize = 1 * 1024 * 1024;
             // Set the defer to true
             $this->client->setDefer(true);
             // Build the request
@@ -124,12 +124,14 @@ class YoutubeAPI
             $this->videoId = $status['id'];
             // Set the Snippet from Uploaded Video
             $this->snippet = $status['snippet'];
+
+
         }  catch (\Google_Service_Exception $e) {
             throw new Exception($e->getMessage());
         } catch (\Google_Exception $e) {
             throw new Exception($e->getMessage());
         }
-        return $this;
+        return $status;
     }
     /**
      * Set a Custom Thumbnail for the Upload
@@ -340,30 +342,6 @@ class YoutubeAPI
             $playlistResponse = $this->youtube->playlists->insert('snippet,status',
                 $youTubePlaylist, array());
             //$playlistId = $playlistResponse['id'];
-
-            // 5. Add a video to the playlist. First, define the resource being added
-            // to the playlist by setting its video ID and kind.
-//            $resourceId = new \Google_Service_YouTube_ResourceId();
-//            $resourceId->setVideoId('SZj6rAYkYOg');
-//            $resourceId->setKind('youtube#video');
-
-            // Then define a snippet for the playlist item. Set the playlist item's
-            // title if you want to display a different value than the title of the
-            // video being added. Add the resource ID and the playlist ID retrieved
-            // in step 4 to the snippet as well.
-//            $playlistItemSnippet = new \Google_Service_YouTube_PlaylistItemSnippet();
-//            $playlistItemSnippet->setTitle('First video in the test playlist');
-//            $playlistItemSnippet->setPlaylistId($playlistId);
-
-
-            // Finally, create a playlistItem resource and add the snippet to the
-            // resource, then call the playlistItems.insert method to add the playlist
-            // item.
-//            $playlistItem = new \Google_Service_YouTube_PlaylistItem();
-//            $playlistItem->setSnippet($playlistItemSnippet);
-//            $playlistItemResponse = $this->youtube->playlistItems->insert(
-//                'snippet,contentDetails', $playlistItem, array());
-
             return $playlistResponse;
         }  catch (\Google_Service_Exception $e) {
             throw new Exception($e->getMessage());
@@ -377,12 +355,12 @@ class YoutubeAPI
      * Get all playlist by channel id
      */
 
-    public function getAllPlayList($limit){
+    public function getAllPlayList(){
         $this->handleAccessToken();
         try {
-            $params =array('mine' => true, 'maxResults' => $limit);
+            $params =array('mine' => true, 'maxResults' => 25);
             //Array marge
-            $response = $this->youtube->playlists->listPlaylists('snippet', $params);
+            $response = $this->youtube->playlists->listPlaylists('snippet,contentDetails', $params);
             return $response;
         } catch (\Google_Service_Exception $e) {
             throw new Exception($e->getMessage());
@@ -469,11 +447,11 @@ class YoutubeAPI
     }
 
     /**Get playlist items **/
-    public function playListItemById($id,$limit){
+    public function playListItemById($id){
         $this->handleAccessToken();
         try {
             $response = $this->youtube->playlistItems->listPlaylistItems( 'snippet,contentDetails',
-                array('maxResults' => $limit, 'playlistId' => $id));
+                array('maxResults' => 25, 'playlistId' => $id));
             return $response;
         } catch (\Google_Service_Exception $e) {
             throw new Exception($e->getMessage());
@@ -499,7 +477,6 @@ class YoutubeAPI
             $playlistItemSnippet = new \Google_Service_YouTube_PlaylistItemSnippet();
             //$playlistItemSnippet->setTitle('First video in the test playlist');
             $playlistItemSnippet->setPlaylistId($playlistId);
-            $playlistItemSnippet->setResourceId($resourceId);
 
 
             // Finally, create a playlistItem resource and add the snippet to the
@@ -518,19 +495,4 @@ class YoutubeAPI
             throw new Exception($e->getMessage());
         }
     }
-
-    /**Remove  video from playlist **/
-    public function removeVideoFromPlaylist($id){
-        $this->handleAccessToken();
-        try {
-            $playlistResponse = $this->youtube->playlistItems->delete($id);
-            return $playlistResponse;
-        }catch (\Google_Service_Exception $e) {
-            throw new Exception($e->getMessage());
-        } catch (\Google_Exception $e) {
-            throw new Exception($e->getMessage());
-        }
-    }
-
-
 }
