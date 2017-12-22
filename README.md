@@ -122,8 +122,6 @@ YoutubeAPI::delete($videoId);
 When deleting a video, it will check if exists before attempting to delete.
 
 
-### Upcoming Updates
-
 # Create playlist
 
 ```php
