@@ -12,7 +12,10 @@ namespace ad\Youtube;
 use Exception;
 use Carbon\Carbon;
 use Google_Client;
+use Google_Exception;
+use Google_Service_Exception;
 use Google_Service_YouTube;
+use Google_Service_YouTubeReporting;
 use Illuminate\Support\Facades\DB;
 class YoutubeAPI
 {
@@ -172,6 +175,61 @@ class YoutubeAPI
         }
         return $this;
     }
+
+
+    /**
+     * Update a Youtube video by its ID
+     * @param $id, $status
+     */
+    public function updateVideo($id, array $data=[] , $privacyStatus){
+        $this->handleAccessToken();
+        try {
+            // Setup the Snippet
+            $snippet = new \Google_Service_YouTube_VideoSnippet();
+            if (array_key_exists('title', $data))       $snippet->setTitle($data['title']);
+            if (array_key_exists('description', $data)) $snippet->setDescription($data['description']);
+            if (array_key_exists('tags', $data))        $snippet->setTags($data['tags']);
+            if (array_key_exists('category_id', $data)) $snippet->setCategoryId($data['category_id']);
+            // Set the Privacy Status
+            $status = new \Google_Service_YouTube_VideoStatus();
+            $status->privacyStatus = $privacyStatus;
+            // Set the Snippet & Status
+            $video = new \Google_Service_YouTube_Video();
+            $video->setId($id);
+           if(!emptyArray($data)) $video->setSnippet($snippet);
+            $video->setStatus($status);
+            $update = $this->youtube->videos->update('status,snippet', $video);
+        } catch (\Google_Service_Exception $e) {
+            throw new Exception($e->getMessage());
+        } catch (\Google_Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+        return $update;
+    }
+
+    /**
+     * Video list by id
+     * @param $id
+     *
+     */
+    public function videosListById($array){
+        $this->handleAccessToken();
+        try{
+            $video = new \Google_Service_YouTube_Video();
+            $params = array_filter($array);
+            $response = $this->youtube->videos->listVideos(
+                'snippet,contentDetails,statistics',
+                $params
+            );
+        }catch (\Google_Service_Exception $e) {
+            throw new Exception($e->getMessage());
+        } catch (\Google_Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+        return $response->items;
+    }
+
+
     /**
      * Delete a YouTube video by it's ID.
      *
@@ -360,7 +418,7 @@ class YoutubeAPI
         try {
             $params =array('mine' => true, 'maxResults' => 25);
             //Array marge
-            $response = $this->youtube->playlists->listPlaylists('snippet,contentDetails', $params);
+            $response = $this->youtube->playlists->listPlaylists('snippet,status', $params);
             return $response;
         } catch (\Google_Service_Exception $e) {
             throw new Exception($e->getMessage());
@@ -477,6 +535,7 @@ class YoutubeAPI
             $playlistItemSnippet = new \Google_Service_YouTube_PlaylistItemSnippet();
             //$playlistItemSnippet->setTitle('First video in the test playlist');
             $playlistItemSnippet->setPlaylistId($playlistId);
+            $playlistItemSnippet->setResourceId($resourceId);
 
 
             // Finally, create a playlistItem resource and add the snippet to the
@@ -494,5 +553,21 @@ class YoutubeAPI
         } catch (\Google_Exception $e) {
             throw new Exception($e->getMessage());
         }
+    }
+
+    /**
+     * Remove video from playlist
+     * @param $videoPlaylistId
+     */
+    public function removeVideoFromPlaylist( $id){
+        $this->handleAccessToken();
+        try {
+            $response = $this->youtube->playlistItems->delete($id);
+        }catch (\Google_Service_Exception $e) {
+            throw new Exception($e->getMessage());
+        } catch (\Google_Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+        return $response;
     }
 }
