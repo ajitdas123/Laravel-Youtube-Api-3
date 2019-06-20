@@ -128,6 +128,38 @@ When deleting a video, it will check if exists before attempting to delete.
 YoutubeAPI::createPlaylist($playlistName,$descriptions,$privacy);
 ```
 
+# Get all playlist by channel 
+
+```php
+YoutubeAPI::getAllPlayList();
+```
+
+
+# Get all playlist info by id 
+
+```php
+YoutubeAPI::playListInfoById($playlistId);
+```
+
+
+# Get playlist items
+
+```php
+YoutubeAPI::playListItemById($playlistId);
+```
+# Insert video into playlist
+
+```php
+YoutubeAPI::insertVideoInPlaylist($videoId,$playlistId);
+```
+
+# Remove video from playlist
+
+```php
+YoutubeAPI::removeVideoFromPlaylist($videoPlaylistId);
+```
+
+
 # Update playlist
 
 
