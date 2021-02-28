@@ -17,6 +17,7 @@ use Google_Service_Exception;
 use Google_Service_YouTube;
 use Google_Service_YouTubeReporting;
 use Illuminate\Support\Facades\DB;
+
 class YoutubeAPI
 {
     /**
@@ -55,10 +56,13 @@ class YoutubeAPI
      * @var string
      */
     private $thumbnailUrl;
+
     /**
      * Constructor
      *
+     * @param $app
      * @param \Google_Client $client
+     * @throws Exception
      */
     public function __construct($app, Google_Client $client)
     {
@@ -69,26 +73,28 @@ class YoutubeAPI
             $this->client->setAccessToken($accessToken);
         }
     }
+
     /**
      * Upload the video to YouTube
      *
-     * @param  string $path
-     * @param  array  $data
-     * @param  string $privacyStatus
+     * @param string $path
+     * @param array $data
+     * @param string $privacyStatus
      * @return string
+     * @throws Exception
      */
     public function upload($path, array $data = [], $privacyStatus)
     {
-        if(!file_exists($path)) {
-            throw new Exception('Video file does not exist at path: "'. $path .'". Provide a full path to the file before attempting to upload.');
+        if (!file_exists($path)) {
+            throw new Exception('Video file does not exist at path: "' . $path . '". Provide a full path to the file before attempting to upload.');
         }
         $this->handleAccessToken();
         try {
             // Setup the Snippet
             $snippet = new \Google_Service_YouTube_VideoSnippet();
-            if (array_key_exists('title', $data))       $snippet->setTitle($data['title']);
+            if (array_key_exists('title', $data)) $snippet->setTitle($data['title']);
             if (array_key_exists('description', $data)) $snippet->setDescription($data['description']);
-            if (array_key_exists('tags', $data))        $snippet->setTags($data['tags']);
+            if (array_key_exists('tags', $data)) $snippet->setTags($data['tags']);
             if (array_key_exists('category_id', $data)) $snippet->setCategoryId($data['category_id']);
             // Set the Privacy Status
             $status = new \Google_Service_YouTube_VideoStatus();
@@ -129,17 +135,18 @@ class YoutubeAPI
             $this->snippet = $status['snippet'];
 
 
-        }  catch (\Google_Service_Exception $e) {
+        } catch (\Google_Service_Exception $e) {
             throw new Exception($e->getMessage());
         } catch (\Google_Exception $e) {
             throw new Exception($e->getMessage());
         }
         return $status;
     }
+
     /**
      * Set a Custom Thumbnail for the Upload
      *
-     * @param  string  $imagePath
+     * @param string $imagePath
      *
      * @return self
      */
@@ -162,7 +169,7 @@ class YoutubeAPI
             $status = false;
             $handle = fopen($imagePath, "rb");
             while (!$status && !feof($handle)) {
-                $chunk  = fread($handle, $chunkSizeBytes);
+                $chunk = fread($handle, $chunkSizeBytes);
                 $status = $media->nextChunk($chunk);
             }
             fclose($handle);
@@ -179,16 +186,17 @@ class YoutubeAPI
 
     /**
      * Update a Youtube video by its ID
-     * @param $id, $status
+     * @param $id , $status
      */
-    public function updateVideo($id, array $data=[] , $privacyStatus){
+    public function updateVideo($id, array $data = [], $privacyStatus)
+    {
         $this->handleAccessToken();
         try {
             // Setup the Snippet
             $snippet = new \Google_Service_YouTube_VideoSnippet();
-            if (array_key_exists('title', $data))       $snippet->setTitle($data['title']);
+            if (array_key_exists('title', $data)) $snippet->setTitle($data['title']);
             if (array_key_exists('description', $data)) $snippet->setDescription($data['description']);
-            if (array_key_exists('tags', $data))        $snippet->setTags($data['tags']);
+            if (array_key_exists('tags', $data)) $snippet->setTags($data['tags']);
             if (array_key_exists('category_id', $data)) $snippet->setCategoryId($data['category_id']);
             // Set the Privacy Status
             $status = new \Google_Service_YouTube_VideoStatus();
@@ -196,7 +204,7 @@ class YoutubeAPI
             // Set the Snippet & Status
             $video = new \Google_Service_YouTube_Video();
             $video->setId($id);
-           if(!emptyArray($data)) $video->setSnippet($snippet);
+            if (!emptyArray($data)) $video->setSnippet($snippet);
             $video->setStatus($status);
             $update = $this->youtube->videos->update('status,snippet', $video);
         } catch (\Google_Service_Exception $e) {
@@ -212,16 +220,17 @@ class YoutubeAPI
      * @param $id
      *
      */
-    public function videosListById($array){
+    public function videosListById($array)
+    {
         $this->handleAccessToken();
-        try{
+        try {
             $video = new \Google_Service_YouTube_Video();
             $params = array_filter($array);
             $response = $this->youtube->videos->listVideos(
                 'snippet,contentDetails,statistics',
                 $params
             );
-        }catch (\Google_Service_Exception $e) {
+        } catch (\Google_Service_Exception $e) {
             throw new Exception($e->getMessage());
         } catch (\Google_Exception $e) {
             throw new Exception($e->getMessage());
@@ -233,7 +242,7 @@ class YoutubeAPI
     /**
      * Delete a YouTube video by it's ID.
      *
-     * @param  int  $id
+     * @param int $id
      *
      * @return bool
      */
@@ -241,14 +250,15 @@ class YoutubeAPI
     {
         $this->handleAccessToken();
         if (!$this->exists($id)) {
-            throw new Exception('A video matching id "'. $id .'" could not be found.');
+            throw new Exception('A video matching id "' . $id . '" could not be found.');
         }
         return $this->youtube->videos->delete($id);
     }
+
     /**
      * Check if a YouTube video exists by it's ID.
      *
-     * @param  int  $id
+     * @param int $id
      *
      * @return bool
      */
@@ -259,6 +269,7 @@ class YoutubeAPI
         if (empty($response->items)) return false;
         return true;
     }
+
     /**
      * Return the Video ID
      *
@@ -268,6 +279,7 @@ class YoutubeAPI
     {
         return $this->videoId;
     }
+
     /**
      * Return the snippet of the uploaded Video
      *
@@ -277,6 +289,7 @@ class YoutubeAPI
     {
         return $this->snippet;
     }
+
     /**
      * Return the URL for the Custom Thumbnail
      *
@@ -286,6 +299,7 @@ class YoutubeAPI
     {
         return $this->thumbnailUrl;
     }
+
     /**
      * Setup the Google Client
      *
@@ -294,7 +308,7 @@ class YoutubeAPI
      */
     private function setup(Google_Client $client)
     {
-        if(
+        if (
             !$this->app->config->get('youtubeAPIConfig.client_id') ||
             !$this->app->config->get('youtubeAPIConfig.client_secret')
         ) {
@@ -312,18 +326,20 @@ class YoutubeAPI
         ));
         return $this->client = $client;
     }
+
     /**
      * Saves the access token to the database.
      *
-     * @param  string  $accessToken
+     * @param string $accessToken
      */
     public function saveAccessTokenToDB($accessToken)
     {
         return DB::table('youtube_access_tokens')->insert([
             'access_token' => json_encode($accessToken),
-            'created_at'   => Carbon::createFromTimestamp($accessToken['created'])
+            'created_at' => Carbon::createFromTimestamp($accessToken['created'])
         ]);
     }
+
     /**
      * Get the latest access token from the database.
      *
@@ -334,8 +350,9 @@ class YoutubeAPI
         $latest = DB::table('youtube_access_tokens')
             ->latest('created_at')
             ->first();
-        return $latest ? (is_array($latest) ? $latest['access_token'] : $latest->access_token ) : null;
+        return $latest ? (is_array($latest) ? $latest['access_token'] : $latest->access_token) : null;
     }
+
     /**
      * Handle the Access Token
      *
@@ -346,11 +363,9 @@ class YoutubeAPI
         if (is_null($accessToken = $this->client->getAccessToken())) {
             throw new \Exception('An access token is required.');
         }
-        if($this->client->isAccessTokenExpired())
-        {
+        if ($this->client->isAccessTokenExpired()) {
             // If we have a "refresh_token"
-            if (array_key_exists('refresh_token', $accessToken))
-            {
+            if (array_key_exists('refresh_token', $accessToken)) {
                 // Refresh the access token
                 $this->client->refreshToken($accessToken['refresh_token']);
                 // Save the access token
@@ -358,11 +373,12 @@ class YoutubeAPI
             }
         }
     }
+
     /**
      * Pass method calls to the Google Client.
      *
-     * @param  string  $method
-     * @param  array   $args
+     * @param string $method
+     * @param array $args
      *
      * @return mixed
      */
@@ -374,7 +390,7 @@ class YoutubeAPI
     /***
      * Create a playlist
      */
-    public function createPlaylist($name,$descriptions,$privacy)
+    public function createPlaylist($name, $descriptions, $privacy)
     {
 
         $this->handleAccessToken();
@@ -401,7 +417,7 @@ class YoutubeAPI
                 $youTubePlaylist, array());
             //$playlistId = $playlistResponse['id'];
             return $playlistResponse;
-        }  catch (\Google_Service_Exception $e) {
+        } catch (\Google_Service_Exception $e) {
             throw new Exception($e->getMessage());
         } catch (\Google_Exception $e) {
             throw new Exception($e->getMessage());
@@ -413,10 +429,11 @@ class YoutubeAPI
      * Get all playlist by channel id
      */
 
-    public function getAllPlayList(){
+    public function getAllPlayList()
+    {
         $this->handleAccessToken();
         try {
-            $params =array('mine' => true, 'maxResults' => 25);
+            $params = array('mine' => true, 'maxResults' => 25);
             //Array marge
             $response = $this->youtube->playlists->listPlaylists('snippet,status', $params);
             return $response;
@@ -431,15 +448,16 @@ class YoutubeAPI
      * Check if playlist Exists
      */
 
-    public function isPlaylistExist(){
-        
+    public function isPlaylistExist()
+    {
+
     }
 
     /***
      * Update a playlist
      */
 
-    public function updatePlaylist($id,$title,$description,$privacy)
+    public function updatePlaylist($id, $title, $description, $privacy)
     {
         $this->handleAccessToken();
         try {
@@ -462,8 +480,7 @@ class YoutubeAPI
             $playlistResponse = $this->youtube->playlists->update('snippet,status',
                 $youTubePlaylist, array());
             return $playlistResponse;
-        }
-        catch (\Google_Service_Exception $e) {
+        } catch (\Google_Service_Exception $e) {
             throw new Exception($e->getMessage());
         } catch (\Google_Exception $e) {
             throw new Exception($e->getMessage());
@@ -475,12 +492,13 @@ class YoutubeAPI
      * Delete playlist
      */
 
-    public function deletePlaylist($id){
+    public function deletePlaylist($id)
+    {
         $this->handleAccessToken();
         try {
             $playlistResponse = $this->youtube->playlists->delete($id);
             return $playlistResponse;
-        }catch (\Google_Service_Exception $e) {
+        } catch (\Google_Service_Exception $e) {
             throw new Exception($e->getMessage());
         } catch (\Google_Exception $e) {
             throw new Exception($e->getMessage());
@@ -489,13 +507,14 @@ class YoutubeAPI
 
 
     /**Get playlist information **/
-    public function playListInfoById($id){
+    public function playListInfoById($id)
+    {
         $this->handleAccessToken();
         try {
 
-           $params =array('id'=> $id, );
+            $params = array('id' => $id,);
             //Array marge
-            $response = $this->youtube->playlists->listPlaylists('snippet',$params);
+            $response = $this->youtube->playlists->listPlaylists('snippet', $params);
             return $response['items'];
         } catch (\Google_Service_Exception $e) {
             throw new Exception($e->getMessage());
@@ -505,10 +524,11 @@ class YoutubeAPI
     }
 
     /**Get playlist items **/
-    public function playListItemById($id){
+    public function playListItemById($id)
+    {
         $this->handleAccessToken();
         try {
-            $response = $this->youtube->playlistItems->listPlaylistItems( 'snippet,contentDetails',
+            $response = $this->youtube->playlistItems->listPlaylistItems('snippet,contentDetails',
                 array('maxResults' => 25, 'playlistId' => $id));
             return $response;
         } catch (\Google_Service_Exception $e) {
@@ -519,7 +539,8 @@ class YoutubeAPI
     }
 
     /**Insert video into a playlist **/
-    public function insertVideoInPlaylist($videoId,$playlistId){
+    public function insertVideoInPlaylist($videoId, $playlistId)
+    {
         $this->handleAccessToken();
         try {
             // 5. Add a video to the playlist. First, define the resource being added
@@ -559,11 +580,12 @@ class YoutubeAPI
      * Remove video from playlist
      * @param $videoPlaylistId
      */
-    public function removeVideoFromPlaylist( $id){
+    public function removeVideoFromPlaylist($id)
+    {
         $this->handleAccessToken();
         try {
             $response = $this->youtube->playlistItems->delete($id);
-        }catch (\Google_Service_Exception $e) {
+        } catch (\Google_Service_Exception $e) {
             throw new Exception($e->getMessage());
         } catch (\Google_Exception $e) {
             throw new Exception($e->getMessage());
