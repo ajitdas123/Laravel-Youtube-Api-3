@@ -216,6 +216,32 @@ class YoutubeAPI
     }
 
     /**
+     * Update a Youtube video by its ID
+     * @param $id , $status
+     */
+    public function updateLocalization($id, string $location = 'vi', array $data = [])
+    {
+        $this->handleAccessToken();
+        try {
+            // Add 'localizations' object to the $video object.
+            $localizations = new \Google_Service_YouTube_VideoLocalization();
+            $localizations[$location] = new \Google_Service_YouTube_VideoLocalization();
+            if (array_key_exists('title', $data)) $localizations['']->setDescription($data['title']);
+            if (array_key_exists('description', $data)) $localizations['']->setTitle($data['description']);
+            // Set the Snippet & Status
+            $video = new \Google_Service_YouTube_Video();
+            $video->setId($id);
+            $video->setLocalizations($localizations);
+            $update = $service->videos->update('localizations', $video);
+        } catch (\Google_Service_Exception $e) {
+            throw new Exception($e->getMessage());
+        } catch (\Google_Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+        return $update;
+    }
+
+    /**
      * Video list by id
      * @param $id
      *
