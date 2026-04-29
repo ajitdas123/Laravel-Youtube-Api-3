@@ -1,4 +1,4 @@
-# Laravel 8 - YouTube Video Upload
+# Laravel 12 - YouTube Video Upload
 
 **Please note, that this package will only work with a single YouTube account and does not support multiple accounts.**
 
@@ -7,7 +7,7 @@
 To install, use the following to pull the package in via Composer.
 
 ```
-composer require ad/youtube:dev-master
+composer require ad/youtube
 ```
 
 
